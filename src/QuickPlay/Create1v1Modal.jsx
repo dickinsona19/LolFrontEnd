@@ -23,18 +23,14 @@ const handleCreateButtonClick= () =>{
         title: 'Himmer 1v1 0192837',
         bid: value
     }
-    addAQuickPlay(data)
+        addAQuickPlay(data)
         props.setIs1v1ModalOpen(false)
+        props.setReSearchQuickplayValue(!props.reSearchQuickplayValue)
 }
-const selectBefore = (
-  <Select defaultValue="add" style={{ width: 60 }}>
-    <Option value="add">+</Option>
-    <Option value="minus">-</Option>
-  </Select>
-);
+
 
   return (
-    <Modal title="Create 1v1 Match" open={props.is1v1ModalOpen} onOk={handleCreateButtonClick } onCancel={() => console.log('Match creation cancelled.')}>
+    <Modal title="Create 1v1 Match" open={props.is1v1ModalOpen} onOk={handleCreateButtonClick } onCancel={() => props.setIs1v1ModalOpen(false)}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <span>What do you want to bid on this 1 v 1?</span>
           <InputNumber style={{ marginTop: '8px', width: 'calc(40% - 40px)' }} onChange={onChange} value={value} />    

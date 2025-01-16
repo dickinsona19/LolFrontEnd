@@ -40,19 +40,21 @@ export const addAQuickPlay = async (quickPlayData) =>{
 
 export const deleteQuickPlay = async (quickplayId) =>{
     try {
-        const response = await fetch(API_URL +"/"+quickplayId, {
+        const response = await fetch(`${API_URL}/${quickplayId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(quickPlayData),
         });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        if (response.status !== 204) {
+            throw new Error('Unexpected status code');
         }
-        return await response.json();
     } catch (error) {
-        console.error('Error making POST request:', error);
+        console.error('Error making DELETE request:', error);
         throw error;
     }
+}
+
+export const join1v1QuickPlayGame = async (currentUser) =>{
+
 }

@@ -35,7 +35,7 @@ const App = () => (
       <Routes>
         <Route path=''  element={<TournamentsDisplayMain/>}/>
         <Route path='/features/QuickPlay' element={<QuickPlayPageContent/>}/>
-        <Route path='/features/ProfileSettings' element={<ProfileSettingsMain/>}/>
+        <Route path='/features/ProfileSettings/*' element={<ProfileSettingsMain/>}/>
         <Route path="/tournament/:id" element={<IndividualTournamentPage />} />
       </Routes>
 

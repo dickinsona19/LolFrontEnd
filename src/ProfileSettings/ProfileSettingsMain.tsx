@@ -1,61 +1,34 @@
-import React, { useState } from 'react';
-import { uploadUserPictureFile } from '../Actions/Users'; // Assuming this is already set up
+import {Typography, Menu } from 'antd';
+import { BrowserRouter as  Router, Route, Routes, Link } from 'react-router-dom';
+import GeneralSettings from './GeneralSettings';
 
 const ProfileSettingsMain = () => {
-  const [loading, setLoading] = useState(false);
-  const [imagePath, setImagePath] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  // Handle file selection and upload
-  const handleFileChange = async (event:any) => {
-    const file = event.target.files[0]; // Get the file from the input
-    if (file) {
-      setLoading(true);
-      setErrorMessage(''); // Reset error message on new upload attempt
-      const response = await uploadUserPictureFile(file);
-      setLoading(false);
-
-      if (response) {
-        setImagePath(response); // Assuming the response is the file path or URL
-      } else {
-        setErrorMessage('Failed to upload the file. Please try again.');
-      }
-    }
-  };
-
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2>Profile Settings</h2>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: '20%', marginRight: '20px' }}>
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={['/profile/general']}
+          defaultOpenKeys={['/profile']}
+          style={{ borderRight: 0 }}
 
-      <div>
-        <input 
-          type="file" 
-          accept="image/*" 
-          onChange={handleFileChange} 
-          disabled={loading} 
-          style={{ marginBottom: '20px' }}
-        />
-        {loading && <p>Uploading...</p>}
-
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        >
+            <Menu.Item key="/profile/general"><Link to="/features/ProfileSettings/General">General</Link></Menu.Item>
+            <Menu.Item key="/profile/security"><Link to="/features/ProfileSettings/Security">Security</Link></Menu.Item>
+            <Menu.Item key="/profile/wallet"><Link to="/features/ProfileSettings/Wallet">Wallet</Link></Menu.Item>
+     
+        </Menu>
       </div>
-
-      {/* Show the uploaded image if available */}
-      {imagePath && (
-        <div>
-          <h3>Profile Picture</h3>
-          <img 
-            src={imagePath}  // Assuming this is the correct path or URL
-            alt="Profile" 
-            style={{ 
-              width: '100px', 
-              height: '100px', 
-              borderRadius: '50%', 
-              objectFit: 'cover' 
-            }} 
-          />
-        </div>
-      )}
+      <div style={{ flex: 1 }}>
+        <Typography.Title level={1} style={{ margin: 0, color: '#ccc', fontWeight: 'bold' }}>
+          Profile Settings
+        </Typography.Title>
+        
+        
+        <Routes>
+        <Route path='/General' element={<GeneralSettings/>}/>
+        </Routes>
+      </div>
     </div>
   );
 };

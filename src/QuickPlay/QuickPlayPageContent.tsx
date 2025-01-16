@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Avatar, Card, List, Input, Divider,Button, Typography } from "antd";
-import {getAllQuickPlays} from '../Actions/QuickPlay.js'
+import {getAllQuickPlays, deleteQuickPlay} from '../Actions/QuickPlay.js'
 import Create1v1Modal from './Create1v1Modal.jsx'
 import { useCurrentUser } from '@/Context/CurrentUserContext.js';
 import ModalPopUp from '@/SignUpAndIn/ModalPopUp.js';
+import Join1v1Modal from './Join1v1Modal.jsx';
 
 import ironIcon from './LeagueRankes/iron.png'
 import bronzeIcon from './LeagueRankes/bronze.webp'
@@ -15,13 +16,17 @@ import diamondIcon from './LeagueRankes/diamond.png'
 import masterIcon from './LeagueRankes/master.png'
 import grandmasterIcon from './LeagueRankes/grandmaster.png'
 import challengerIcon from './LeagueRankes/challenger.webp'
+import  opggIcon from '../assets/op-gg-icon.png'
+
 
 interface QuickPlayData {
+  id: number;
   title: string;
   summonerName: string;
   bid: number;
   rank: string;
   host: any;
+  username: string;
 }
 
 const rankIcons = {
@@ -48,8 +53,11 @@ const QuickPlayPageContent = () => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [userIsAlreadyHosting, setUserIsAlreadyHosting] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-
+  const [isJoin1v1ModalOpen, setIsJoin1v1ModalOpen] = useState(false)
+  const [currentPossible1v1Match, setCurrentPossible1v1Match] = useState({});
+  const [reSearchQuickplayValue, setReSearchQuickplayValue] = useState(false);
+  
+  
   const handleCreate1v1ButtonClick = ()=> {
     if(currentUser){
       setIs1v1ModalOpen(true)
@@ -58,16 +66,29 @@ const QuickPlayPageContent = () => {
       setIsLoginModalOpen(true)
     }
   };
+
+  const handleJoin1v1ButtonClick =(item:any)=>{
+    if(currentUser){
+      setIsJoin1v1ModalOpen(true); 
+      setCurrentPossible1v1Match(item);
+    }
+    else{
+      setIsLoginModalOpen(true)
+    }
+  }
   
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getAllQuickPlays();
         const processedData = data.map((item: any) => {
+          setUserIsAlreadyHosting(false)
+          if(item.host.username == currentUser?.username){setUserIsAlreadyHosting(true)}
           const summonerAccount = item.host.linkedAccounts.find(
             (account: any) => account.accountTypeName === "LeagueOfLegendsAccount"
           );
           return {
+            id: item.id,
             title: item.title,
             summonerName: summonerAccount ? summonerAccount.accountIdentifier : "Unknown",
             bid: item.bid,
@@ -82,7 +103,7 @@ const QuickPlayPageContent = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currentUser, reSearchQuickplayValue]);
   
 
   const handleSearch = (e:any) => {
@@ -91,15 +112,27 @@ const QuickPlayPageContent = () => {
   };
 
   useEffect(() => {
-    const filtered = QuickPlayData.filter(item => item.summonerName.toLowerCase().includes(searchValue));
+    const filtered = QuickPlayData.filter(item => item.host.username.toLowerCase().includes(searchValue));
     setFilteredData(filtered);
-  }, [searchValue, QuickPlayData]);
+  }, [searchValue, QuickPlayData, reSearchQuickplayValue]);
+  const handleDelete1v1 = async (id:number) => {
+    try {
+      await deleteQuickPlay(id);
+      setReSearchQuickplayValue(!reSearchQuickplayValue);
+      console.log('Quick play deleted successfully');
+    } catch (error) {
+      console.error('Error deleting quick play:', error);
+    }
+  }
 
   return (
 
 <div>
  <ModalPopUp isModalOpen={isLoginModalOpen} setIsModalOpen={setIsLoginModalOpen} modalState={0}/>
-  <Create1v1Modal currentUser={currentUser} is1v1ModalOpen={is1v1ModalOpen} setIs1v1ModalOpen={setIs1v1ModalOpen}/>
+  <Create1v1Modal currentUser={currentUser} is1v1ModalOpen={is1v1ModalOpen} setIs1v1ModalOpen={setIs1v1ModalOpen} reSearchQuickplayValue={reSearchQuickplayValue} setReSearchQuickplayValue={setReSearchQuickplayValue}/>
+  <Join1v1Modal currentUser={currentUser} isJoin1v1ModalOpen={isJoin1v1ModalOpen} setIsJoin1v1ModalOpen={setIsJoin1v1ModalOpen} currentPossible1v1Match={currentPossible1v1Match}/>
+
+
 <div style={{ textAlign: 'center', margin: '20px' }}>
   <Typography.Title level={1} style={{ fontWeight: 'bold' }}>Quick Play</Typography.Title>
 </div>
@@ -117,23 +150,26 @@ const QuickPlayPageContent = () => {
           renderItem={(item, index) => (
             <div>
 
-              <List.Item >
-                <a>
+              <List.Item>
                 <List.Item.Meta
                   avatar={<Avatar src={rankIcons['challenger']} />}
-                  title={item.summonerName}
+                  title={<span>{item.host.username}</span>}
                   description={item.bid}
                 />
-                </a>
+         
                 
-                <Button color="primary" variant="outlined" style={{ marginLeft: 'auto' }}>Join</Button>
-                {currentUser?.username == item.host.username && (
+                {currentUser?.username === item.host.username ? (
                   <>
-                    <Button color="danger" variant="solid" style={{ marginLeft: '5px' }}>Delete</Button>
-                    {setUserIsAlreadyHosting(true)}
+                    <Button color="danger" variant="solid" style={{ marginLeft: '5px' }} onClick={() =>{handleDelete1v1(item.id)}}>Delete</Button>
                   </>
-                )}
-                
+                )
+                :( <>
+                  <a href={`https://www.op.gg/summoners/na/${item.summonerName}-NA1`} style={{ width: '3%' }} target="_blank" rel="noopener noreferrer">
+                  <img src={opggIcon}  />
+                  </a>
+                  <Divider type="vertical" style={{ height: '50px' }}/>
+             <Button color="primary" variant="outlined" style={{ marginLeft: 'auto' }} onClick={() =>{handleJoin1v1ButtonClick(item)}}>Join</Button>
+                </>)}
               </List.Item>
               <Divider style={{ marginTop: '0px' }}/>
             </div>

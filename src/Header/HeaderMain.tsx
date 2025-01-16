@@ -34,7 +34,7 @@ const HeaderMain = () => {
       key: '1',
       label: (
        
-          <Link to="/features/ProfileSettings">Profile Settings</Link>
+          <Link to="/features/ProfileSettings/General">Profile Settings</Link>
       
       ),
     },
