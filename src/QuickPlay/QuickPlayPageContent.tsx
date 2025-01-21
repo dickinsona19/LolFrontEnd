@@ -154,7 +154,7 @@ const QuickPlayPageContent = () => {
                 <List.Item.Meta
                   avatar={<Avatar src={rankIcons['challenger']} />}
                   title={<span>{item.host.username}</span>}
-                  description={item.bid}
+                  description={`$${item.bid.toFixed(2)}`}
                 />
          
                 

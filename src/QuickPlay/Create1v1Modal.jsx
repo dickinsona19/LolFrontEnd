@@ -23,9 +23,10 @@ const handleCreateButtonClick= () =>{
         title: 'Himmer 1v1 0192837',
         bid: value
     }
+    props.setReSearchQuickplayValue(!props.reSearchQuickplayValue)
         addAQuickPlay(data)
         props.setIs1v1ModalOpen(false)
-        props.setReSearchQuickplayValue(!props.reSearchQuickplayValue)
+        
 }
 
 

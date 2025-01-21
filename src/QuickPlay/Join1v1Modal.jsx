@@ -4,10 +4,6 @@ import { Modal, Select} from 'antd';
 
 
 const Join1v1Modal = (props) => {
-const { Option } = Select;
-const [value, setValue] = useState(0);
-
-
 
   return (
     <Modal title={`1v1 ${props.currentPossible1v1Match.summonerName}?`} open={props.isJoin1v1ModalOpen}  onCancel={() => props.setIsJoin1v1ModalOpen(false)}>
