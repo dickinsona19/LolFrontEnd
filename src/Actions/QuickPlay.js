@@ -55,6 +55,22 @@ export const deleteQuickPlay = async (quickplayId) =>{
     }
 }
 
-export const join1v1QuickPlayGame = async (currentUser) =>{
 
+export const join1v1QuickPlayGame = async (quickPlayId, challengerId) =>{
+    try {
+        const response = await fetch(`${API_URL}/add-challenger/${quickPlayId}?challengerId=${challengerId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ challengerId }),
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error making PUT request:', error);
+        throw error;
+    }
 }

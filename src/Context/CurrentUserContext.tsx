@@ -6,7 +6,7 @@ interface User {
   id: string;
   username: string;
   email: string;
-  linkedAccounts: any; // Adjust this type based on your application
+  linkedAccounts: any;
 }
 
 interface LoginData {
@@ -20,7 +20,9 @@ interface CurrentUserContextType {
   setCurrentUser: (user: User | null) => void;
   login: (data: LoginData) => Promise<boolean>; // Changed here
   logout: () => void;
+  setIsParticipatingInQuickPlay: (isParticipating: boolean) => void; // Added here
   error: string | null; // Error state for login attempts
+  isParticipatingInQuickPlay: boolean;
 }
 
 // Create the context with a default value of undefined
@@ -30,6 +32,7 @@ const CurrentUserContext = createContext<CurrentUserContextType | undefined>(und
 export const CurrentUserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null); // State for error messages
+  const [isParticipatingInQuickPlay, setIsParticipatingInQuickPlay] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -81,7 +84,7 @@ export const CurrentUserProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   return (
-    <CurrentUserContext.Provider value={{ currentUser, setCurrentUser, login, logout, error }}>
+    <CurrentUserContext.Provider value={{ currentUser, setCurrentUser, login, logout, setIsParticipatingInQuickPlay, error, isParticipatingInQuickPlay }}>
       {children}
     </CurrentUserContext.Provider>
   );
